@@ -1,7 +1,9 @@
 ﻿<Properties StartupConfiguration="{9878DB80-F736-42E4-ABF2-A0FE8C3535B5}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="ChakraShooter/Game1.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ChakraShooter/Framework/Controller/Program.cs">
     <Files>
-      <File FileName="ChakraShooter/Game1.cs" Line="1" Column="1" />
+      <File FileName="ChakraShooter/Framework/Model/Player.cs" Line="11" Column="1" />
+      <File FileName="ChakraShooter/Framework/Controller/ZenGame.cs" Line="17" Column="19" />
+      <File FileName="ChakraShooter/Framework/Controller/Program.cs" Line="27" Column="15" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
