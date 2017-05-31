@@ -1,0 +1,14 @@
+﻿<Properties StartupConfiguration="{9878DB80-F736-42E4-ABF2-A0FE8C3535B5}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ChakraShooter/Game1.cs">
+    <Files>
+      <File FileName="ChakraShooter/Game1.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.ItemProperties.ChakraShooter PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>
