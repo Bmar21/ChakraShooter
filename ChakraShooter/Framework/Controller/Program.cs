@@ -11,7 +11,7 @@ using UIKit;
 #endif
 #endregion
 
-namespace ChakraShooter
+namespace ChakraShooter.Controller
 {
 #if __IOS__ || __TVOS__
     [Register("AppDelegate")]
@@ -20,11 +20,11 @@ namespace ChakraShooter
 	static class Program
 #endif
 	{
-		private static Game1 game;
+		private static ZenGame game;
 
 		internal static void RunGame()
 		{
-			game = new Game1();
+			game = new ZenGame();
 			game.Run();
 #if !__IOS__ && !__TVOS__
 			game.Dispose();
