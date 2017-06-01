@@ -41,6 +41,8 @@
     <Compile Include="Framework\Controller\ZenGame.cs" />
     <Compile Include="Framework\Controller\Program.cs" />
     <Compile Include="Framework\Model\Player.cs" />
+    <Compile Include="Framework\View\Animation.cs" />
+    <Compile Include="Framework\View\ParallaxingBackground.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />
