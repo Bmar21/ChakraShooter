@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ChakraShooter.Model;
 using ChakraShooter.View;
+using System.Collections.Generic;
 
 namespace ChakraShooter.Controller
 {
@@ -43,6 +44,17 @@ namespace ChakraShooter.Controller
 		// A movement speed for the player
 		private float playerMoveSpeed;
 
+		// Enemies
+		private Texture2D enemyTexture;
+		private List<Enemy> enemies;
+
+		// The rate at which the enemies appear
+		private TimeSpan enemySpawnTime;
+		private TimeSpan previousSpawnTime;
+
+		// A random number generator
+		private Random random;
+
 		/// <summary>
 		/// Allows the game to perform any initialization it needs to before starting to run.
 		/// This is where it can query for any required services and load any non-graphic
@@ -59,6 +71,18 @@ namespace ChakraShooter.Controller
 
 			bgLayer1 = new ParallaxingBackground();
 			bgLayer2 = new ParallaxingBackground();
+
+			// Initialize the enemies list
+			enemies = new List<Enemy>();
+
+			// Set the time keepers to zero
+			previousSpawnTime = TimeSpan.Zero;
+
+			// Used to determine how fast enemy respawns
+			enemySpawnTime = TimeSpan.FromSeconds(1.0f);
+
+			// Initialize our random number generator
+			random = new Random();
 
 			// TODO: Add your initialization logic here
 
@@ -87,6 +111,8 @@ namespace ChakraShooter.Controller
 			bgLayer2.Initialize(Content, "Texture/bgLayer2", GraphicsDevice.Viewport.Width, -2);
 
 			mainBackground = Content.Load<Texture2D>("Texture/mainbackground");
+
+			enemyTexture = Content.Load<Texture2D>("Animation/mineAnimation");
 
 			//TODO: use this.Content to load your game content here 
 		}
@@ -120,6 +146,9 @@ namespace ChakraShooter.Controller
 			bgLayer1.Update();
 			bgLayer2.Update();
 
+			// Update the enemies
+			UpdateEnemies(gameTime);
+
 			// TODO: Add your update logic here
 
 			base.Update(gameTime);
@@ -145,8 +174,16 @@ namespace ChakraShooter.Controller
 			// Draw the Player 
 			player.Draw(spriteBatch);
 
+			// Draw the Enemies
+			for (int i = 0; i<enemies.Count; i++)
+			{
+				enemies[i].Draw(spriteBatch);
+			}
+
 			// Stop drawing 
 			spriteBatch.End();
+
+
 			//TODO: Add your drawing code here
 
 			base.Draw(gameTime);
@@ -181,6 +218,50 @@ namespace ChakraShooter.Controller
 			// Make sure that the player does not go out of bounds
 			player.Position.X = MathHelper.Clamp(player.Position.X, 0, GraphicsDevice.Viewport.Width - player.Width);
 			player.Position.Y = MathHelper.Clamp(player.Position.Y, 0, GraphicsDevice.Viewport.Height - player.Height);
+		}
+
+		private void AddEnemy()
+		{
+			// Create the animation object
+			Animation enemyAnimation = new Animation();
+
+			// Initialize the animation with the correct animation information
+			enemyAnimation.Initialize(enemyTexture, Vector2.Zero, 47, 61, 8, 30, Color.White, 1f, true);
+
+			// Randomly generate the position of the enemy
+			Vector2 position = new Vector2(GraphicsDevice.Viewport.Width + enemyTexture.Width / 2, random.Next(100, GraphicsDevice.Viewport.Height - 100));
+
+			// Create an enemy
+			Enemy enemy = new Enemy();
+
+			// Initialize the enemy
+			enemy.Initialize(enemyAnimation, position);
+
+			// Add the enemy to the active enemies list
+			enemies.Add(enemy);
+		}
+
+		private void UpdateEnemies(GameTime gameTime)
+		{
+			// Spawn a new enemy enemy every 1.5 seconds
+			if (gameTime.TotalGameTime - previousSpawnTime > enemySpawnTime)
+			{
+				previousSpawnTime = gameTime.TotalGameTime;
+
+				// Add an Enemy
+				AddEnemy();
+			}
+
+			// Update the Enemies
+			for (int i = enemies.Count - 1; i >= 0; i--)
+			{
+				enemies[i].Update(gameTime);
+
+				if (enemies[i].Active == false)
+				{
+					enemies.RemoveAt(i);
+				}
+			}
 		}
 	}
 }
