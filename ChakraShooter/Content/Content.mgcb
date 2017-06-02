@@ -61,12 +61,6 @@
 /processorParam:Quality=Best
 /build:Sound/explosion.wav
 
-#begin Sound/gameMusic.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:Sound/gameMusic.mp3
-
 #begin Sound/laserFire.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -174,4 +168,10 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Texture/player.png
+
+#begin Sound/gameplayMusic.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sound/gameplayMusic.mp3
 

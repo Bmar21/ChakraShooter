@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework.Input;
 using ChakraShooter.Model;
 using ChakraShooter.View;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace ChakraShooter.Controller
 {
@@ -62,6 +64,18 @@ namespace ChakraShooter.Controller
 		private TimeSpan fireTime;
 		private TimeSpan previousFireTime;
 
+		private Texture2D explosionTexture;
+		private List<Animation> explosions;
+
+		// The sound that is played when a laser is fired
+		private SoundEffect laserSound;
+
+		// The sound used when the player or an enemy dies
+		private SoundEffect explosionSound;
+
+		// The music played during gameplay
+		private Song gameplayMusic;
+
 		/// <summary>
 		/// Allows the game to perform any initialization it needs to before starting to run.
 		/// This is where it can query for any required services and load any non-graphic
@@ -96,6 +110,8 @@ namespace ChakraShooter.Controller
 			// Set the laser to fire every quarter second
 			fireTime = TimeSpan.FromSeconds(.15f);
 
+			explosions = new List<Animation>();
+
 			// TODO: Add your initialization logic here
 
 			base.Initialize();
@@ -118,6 +134,16 @@ namespace ChakraShooter.Controller
 			Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
 			player.Initialize(playerAnimation, playerPosition);
 
+			// Load the music
+			gameplayMusic = Content.Load<Song>("Sound/gameMusic");
+
+			// Load the laser and explosion sound effect
+			laserSound = Content.Load<SoundEffect>("Sound/laserFire");
+			explosionSound = Content.Load<SoundEffect>("Sound/explosion");
+
+			// Start the music right away
+			PlayMusic(gameplayMusic);
+
 			// Load the parallaxing background
 			bgLayer1.Initialize(Content, "Texture/bgLayer1", GraphicsDevice.Viewport.Width, -1);
 			bgLayer2.Initialize(Content, "Texture/bgLayer2", GraphicsDevice.Viewport.Width, -2);
@@ -127,6 +153,9 @@ namespace ChakraShooter.Controller
 			enemyTexture = Content.Load<Texture2D>("Animation/mineAnimation");
 
 			projectileTexture = Content.Load<Texture2D>("Texture/laser");
+
+			explosionTexture = Content.Load<Texture2D>("Animation/explosion");
+
 
 			//TODO: use this.Content to load your game content here 
 		}
@@ -253,7 +282,11 @@ namespace ChakraShooter.Controller
 
 				// Add the projectile, but add it to the front and center of the player
 				AddProjectile(player.Position + new Vector2(player.Width / 2, 0));
+
+				// Play the laser sound
+				laserSound.Play();
 			}
+
 		}
 
 		private void AddEnemy()
@@ -298,6 +331,9 @@ namespace ChakraShooter.Controller
 					enemies.RemoveAt(i);
 				}
 			}
+
+			// Play the explosion sound
+			explosionSound.Play();
 		}
 
 		private void UpdateCollision()
@@ -374,6 +410,21 @@ namespace ChakraShooter.Controller
 					projectiles.RemoveAt(i);
 				}
 			}
+		}
+
+		private void PlayMusic(Song song)
+		{
+			// Due to the way the MediaPlayer plays music,
+			// we have to catch the exception. Music will play when the game is not tethered
+			try
+			{
+				// Play the music
+				MediaPlayer.Play(song);
+
+				// Loop the currently playing song
+				MediaPlayer.IsRepeating = true;
+			}
+			catch { } //No Exception is handled so it is an empty/anonymous exception
 		}
 
 	}
