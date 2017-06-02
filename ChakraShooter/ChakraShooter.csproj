@@ -44,6 +44,7 @@
     <Compile Include="Framework\View\Animation.cs" />
     <Compile Include="Framework\View\ParallaxingBackground.cs" />
     <Compile Include="Framework\Model\Enemy.cs" />
+    <Compile Include="Framework\Model\Projectile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />
