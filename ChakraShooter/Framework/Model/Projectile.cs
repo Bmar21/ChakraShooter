@@ -55,7 +55,7 @@ namespace ChakraShooter
 		public void Initialize(Viewport viewport, Texture2D texture, Vector2 position)
 		{
 			this.texture = texture;
-			this.position = position;
+			this.Position = position;
 			this.viewport = viewport;
 
 			active = true;
