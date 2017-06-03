@@ -76,6 +76,11 @@ namespace ChakraShooter.Controller
         // The music played during gameplay
         private Song gameplayMusic;
 
+        //Number that holds the player score
+        private int score;
+        // The font used to display UI elements
+        private SpriteFont font;
+
 		/// <summary>
 		/// Allows the game to perform any initialization it needs to before starting to run.
 		/// This is where it can query for any required services and load any non-graphic
@@ -88,7 +93,7 @@ namespace ChakraShooter.Controller
 			player = new Player();
 
 			// Set a constant player move speed
-			playerMoveSpeed = 8.0f;
+			playerMoveSpeed = 6.0f;
 
 			bgLayer1 = new ParallaxingBackground();
 			bgLayer2 = new ParallaxingBackground();
@@ -112,6 +117,9 @@ namespace ChakraShooter.Controller
 
 			explosions = new List<Animation>();
 
+            //Set player's score to zero
+            score = 0;
+
 			// TODO: Add your initialization logic here
 
 			base.Initialize();
@@ -128,8 +136,8 @@ namespace ChakraShooter.Controller
 
 			// Load the player resources
 			Animation playerAnimation = new Animation();
-			Texture2D playerTexture = Content.Load<Texture2D>("Animation/shipAnimation");
-			playerAnimation.Initialize(playerTexture, Vector2.Zero, 115, 69, 8, 30, Color.White, 1f, true);
+			Texture2D playerTexture = Content.Load<Texture2D>("Animation/MasterMonkAnimation");
+			playerAnimation.Initialize(playerTexture, Vector2.Zero, 180, 100, 2, 150, Color.White, 1f, true);
 
 			Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
 			player.Initialize(playerAnimation, playerPosition);
@@ -155,6 +163,9 @@ namespace ChakraShooter.Controller
 			projectileTexture = Content.Load<Texture2D>("Texture/laser");
 
 			explosionTexture = Content.Load<Texture2D>("Animation/explosion");
+
+            // Load the score font
+            font = Content.Load<SpriteFont>("Font/gameFont");
 
 
 			//TODO: use this.Content to load your game content here 
@@ -244,6 +255,12 @@ namespace ChakraShooter.Controller
                 explosions[i].Draw(spriteBatch);
             }
 
+            // Draw the score
+            spriteBatch.DrawString(font, "score: " + score, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y), Color.White);
+            // Draw the player health
+            spriteBatch.DrawString(font, "health: " + player.Health, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.White);
+
+
 			// Stop drawing 
 			spriteBatch.End();
 
@@ -296,6 +313,13 @@ namespace ChakraShooter.Controller
                 laserSound.Play();
 			}
 
+            // reset score if player health goes to zero
+            if (player.Health <= 0)
+            {
+                player.Health = 100;
+                score = 0;
+            }
+
 		}
 
 		private void AddEnemy()
@@ -344,6 +368,8 @@ namespace ChakraShooter.Controller
                         AddExplosion(enemies[i].Position);
                         // Play the explosion sound
                         explosionSound.Play();
+                        //Add to the player's score
+                        score += enemies[i].ScoreValue;
                     }
 
 					enemies.RemoveAt(i);
