@@ -6,7 +6,7 @@ using ChakraShooter.Model;
 namespace ChakraShooter
 {
 	public class Projectile
-	{
+    {
 		// Image representing the Projectile
 		private Texture2D texture;
 		public Texture2D Texture

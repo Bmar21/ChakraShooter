@@ -60,8 +60,17 @@ namespace ChakraShooter.Controller
 		private Texture2D projectileTexture;
 		private List<Projectile> projectiles;
 
-		// The rate of fire of the player laser
-		private TimeSpan fireTime;
+        private Texture2D EarthTexture;
+		private List<Earth> earth;
+
+        private Texture2D FireTexture;
+        private List<Fire> fire;
+
+        private Texture2D WaterTexture;
+        private List<Water> water;
+
+        // The rate of fire of the player laser
+        private TimeSpan fireTime;
 		private TimeSpan previousFireTime;
 
 		private Texture2D explosionTexture;
@@ -111,9 +120,14 @@ namespace ChakraShooter.Controller
 			random = new Random();
 
 			projectiles = new List<Projectile>();
+            earth = new List<Earth>();
+            fire = new List<Fire>();
+            water = new List<Water>();
 
-			// Set the laser to fire every quarter second
-			fireTime = TimeSpan.FromSeconds(.15f);
+
+
+            // Set the laser to fire every quarter second
+            fireTime = TimeSpan.FromSeconds(.15f);
 
 			explosions = new List<Animation>();
 
@@ -153,16 +167,22 @@ namespace ChakraShooter.Controller
             PlayMusic(gameplayMusic);
 
 			// Load the parallaxing background
-			bgLayer1.Initialize(Content, "Texture/bgLayer1", GraphicsDevice.Viewport.Width, -1);
-			bgLayer2.Initialize(Content, "Texture/bgLayer2", GraphicsDevice.Viewport.Width, -2);
+			bgLayer1.Initialize(Content, "Texture/Prettybackground", GraphicsDevice.Viewport.Width, -1);
+			bgLayer2.Initialize(Content, "Texture/ZenBackground", GraphicsDevice.Viewport.Width, -2);
 
-			mainBackground = Content.Load<Texture2D>("Texture/mainbackground");
+			mainBackground = Content.Load<Texture2D>("Texture/ZenBackground");
 
 			enemyTexture = Content.Load<Texture2D>("Animation/mineAnimation");
 
-			projectileTexture = Content.Load<Texture2D>("Texture/laser");
+			projectileTexture = Content.Load<Texture2D>("Texture/ElementAir");
 
-			explosionTexture = Content.Load<Texture2D>("Animation/explosion");
+            EarthTexture = Content.Load<Texture2D>("Texture/ElementEarth");
+
+            FireTexture = Content.Load<Texture2D>("Texture/ElementFire");
+
+            WaterTexture = Content.Load<Texture2D>("Texture/ElementWater");
+
+            explosionTexture = Content.Load<Texture2D>("Animation/explosion");
 
             // Load the score font
             font = Content.Load<SpriteFont>("Font/gameFont");
@@ -200,7 +220,12 @@ namespace ChakraShooter.Controller
 			UpdateCollision();
 
 			// Update the projectiles
-			UpdateProjectiles();
+
+		    UpdateProjectiles();
+            UpdateEarth();
+            UpdateFire();
+            UpdateWater();
+           
 
             // Update the explosions
             UpdateExplosions(gameTime);
@@ -248,6 +273,24 @@ namespace ChakraShooter.Controller
 			{
 				projectiles[i].Draw(spriteBatch);
 			}
+
+            // Draw the Projectiles
+            for (int i = 0; i < earth.Count; i++)
+            {
+                earth[i].Draw(spriteBatch);
+            }
+
+            // Draw the Projectiles
+            for (int i = 0; i < fire.Count; i++)
+            {
+                fire[i].Draw(spriteBatch);
+            }
+
+            // Draw the Projectiles
+            for (int i = 0; i < water.Count; i++)
+            {
+                water[i].Draw(spriteBatch);
+            }
 
             // Draw the explosions
             for (int i = 0; i < explosions.Count; i++)
@@ -301,7 +344,7 @@ namespace ChakraShooter.Controller
 			player.Position.Y = MathHelper.Clamp(player.Position.Y, 0, GraphicsDevice.Viewport.Height - player.Height);
 
 			// Fire only every interval we set as the fireTime
-			if (gameTime.TotalGameTime - previousFireTime > fireTime)
+			if (currentKeyboardState.IsKeyDown(Keys.A))
 			{
 				// Reset our current time
 				previousFireTime = gameTime.TotalGameTime;
@@ -312,6 +355,46 @@ namespace ChakraShooter.Controller
                 // Play the laser sound
                 laserSound.Play();
 			}
+
+            // Fire only every interval we set as the fireTime
+            if (currentKeyboardState.IsKeyDown(Keys.S))
+            {
+                // Reset our current time
+                previousFireTime = gameTime.TotalGameTime;
+
+                // Add the projectile, but add it to the front and center of the player
+                AddEarth(player.Position + new Vector2(player.Width / 2, 0));
+
+                // Play the laser sound
+                laserSound.Play();
+            }
+
+            // Fire only every interval we set as the fireTime
+            if (currentKeyboardState.IsKeyDown(Keys.D))
+            {
+                // Reset our current time
+                previousFireTime = gameTime.TotalGameTime;
+
+                // Add the projectile, but add it to the front and center of the player
+                AddFire(player.Position + new Vector2(player.Width / 2, 0));
+
+                // Play the laser sound
+                laserSound.Play();
+            }
+
+            // Fire only every interval we set as the fireTime
+            if (currentKeyboardState.IsKeyDown(Keys.W))
+            {
+                // Reset our current time
+                previousFireTime = gameTime.TotalGameTime;
+
+                // Add the projectile, but add it to the front and center of the player
+                AddWater(player.Position + new Vector2(player.Width / 2, 0));
+
+                // Play the laser sound
+                laserSound.Play();
+            }
+
 
             // reset score if player health goes to zero
             if (player.Health <= 0)
@@ -413,47 +496,170 @@ namespace ChakraShooter.Controller
 				}
 			}
 
-			// Projectile vs Enemy Collision
-			for (int i = 0; i < projectiles.Count; i++)
-			{
-				for (int j = 0; j < enemies.Count; j++)
-				{
-					// Create the rectangles we need to determine if we collided with each other
-					rectangle1 = new Rectangle((int)projectiles[i].Position.X - projectiles[i].Width / 2, (int)projectiles[i].Position.Y -
-			 projectiles[i].Height / 2, projectiles[i].Width, projectiles[i].Height);
+            // Projectile vs Enemy Collision
+            for (int i = 0; i < projectiles.Count; i++)
+            {
+                for (int j = 0; j < enemies.Count; j++)
+                {
+                    // Create the rectangles we need to determine if we collided with each other
+                    rectangle1 = new Rectangle((int)projectiles[i].Position.X - projectiles[i].Width / 2, (int) projectiles[i].Position.Y - 
+                    projectiles[i].Height / 2, projectiles[i].Width, projectiles[i].Height);
 
-					rectangle2 = new Rectangle((int)enemies[j].Position.X - enemies[j].Width / 2, (int)enemies[j].Position.Y - enemies[j].Height / 2, enemies[j].Width, enemies[j].Height);
+                    rectangle2 = new Rectangle((int)enemies[j].Position.X - enemies[j].Width / 2, (int) enemies[j].Position.Y - enemies[j].Height / 2, enemies[j].Width, enemies[j].Height);
 
-					// Determine if the two objects collided with each other
-					if (rectangle1.Intersects(rectangle2))
-					{
-						enemies[j].Health -= projectiles[i].Damage;
-						projectiles[i].Active = false;
-					}
-				}
-			}
-		}
+                    // Determine if the two objects collided with each other
+                    if (rectangle1.Intersects(rectangle2))
+                    {
+                        enemies[j].Health -= projectiles[i].Damage;
+                        projectiles[i].Active = false;
+                    }
+                }
+            }
 
-		private void AddProjectile(Vector2 position)
-		{
-			Projectile projectile = new Projectile();
-			projectile.Initialize(GraphicsDevice.Viewport, projectileTexture, position);
-			projectiles.Add(projectile);
-		}
+            for (int i = 0; i < earth.Count; i++)
+            {
+                for (int j = 0; j < enemies.Count; j++)
+                {
+                    // Create the rectangles we need to determine if we collided with each other
+                    rectangle1 = new Rectangle((int)earth[i].Position.X - earth[i].Width / 2, (int)earth[i].Position.Y -
+                    earth[i].Height / 2, earth[i].Width, earth[i].Height);
 
-		private void UpdateProjectiles()
-		{
-			// Update the Projectiles
-			for (int i = projectiles.Count - 1; i >= 0; i--)
-			{
-				projectiles[i].Update();
+                    rectangle2 = new Rectangle((int)enemies[j].Position.X - enemies[j].Width / 2, (int)enemies[j].Position.Y - enemies[j].Height / 2, enemies[j].Width, enemies[j].Height);
 
-				if (projectiles[i].Active == false)
-				{
-					projectiles.RemoveAt(i);
-				}
-			}
-		}
+                    // Determine if the two objects collided with each other
+                    if (rectangle1.Intersects(rectangle2))
+                    {
+                        enemies[j].Health -= earth[i].Damage;
+                        earth[i].Active = false;
+                    }
+                }
+            }
+
+            for (int i = 0; i < fire.Count; i++)
+            {
+                for (int j = 0; j < enemies.Count; j++)
+                {
+                    // Create the rectangles we need to determine if we collided with each other
+                    rectangle1 = new Rectangle((int)fire[i].Position.X - fire[i].Width / 2, (int)fire[i].Position.Y -
+                    fire[i].Height / 2, fire[i].Width, fire[i].Height);
+
+                    rectangle2 = new Rectangle((int)enemies[j].Position.X - enemies[j].Width / 2, (int)enemies[j].Position.Y - enemies[j].Height / 2, enemies[j].Width, enemies[j].Height);
+
+                    // Determine if the two objects collided with each other
+                    if (rectangle1.Intersects(rectangle2))
+                    {
+                        enemies[j].Health -= fire[i].Damage;
+                        fire[i].Active = false;
+                    }
+                }
+            }
+
+            for (int i = 0; i < water.Count; i++)
+            {
+                for (int j = 0; j < enemies.Count; j++)
+                {
+                    // Create the rectangles we need to determine if we collided with each other
+                    rectangle1 = new Rectangle((int)water[i].Position.X - water[i].Width / 2, (int)water[i].Position.Y -
+                    water[i].Height / 2, water[i].Width, water[i].Height);
+
+                    rectangle2 = new Rectangle((int)enemies[j].Position.X - enemies[j].Width / 2, (int)enemies[j].Position.Y - enemies[j].Height / 2, enemies[j].Width, enemies[j].Height);
+
+                    // Determine if the two objects collided with each other
+                    if (rectangle1.Intersects(rectangle2))
+                    {
+                        enemies[j].Health -= water[i].Damage;
+                        water[i].Active = false;
+                    }
+                }
+            }
+
+        }
+        
+        private void AddProjectile(Vector2 position)
+        {
+            Projectile projectile = new Projectile(); 
+            projectile.Initialize(GraphicsDevice.Viewport, projectileTexture, position); 
+            projectiles.Add(projectile);
+        }
+
+        private void AddEarth(Vector2 position)
+        {
+            Earth earthElement = new Earth();
+            earthElement.Initialize(GraphicsDevice.Viewport, EarthTexture, position);
+            earth.Add(earthElement);
+        }
+
+        private void AddFire(Vector2 position)
+        {
+            Fire fireElement = new Fire();
+            fireElement.Initialize(GraphicsDevice.Viewport, FireTexture, position);
+            fire.Add(fireElement);
+        }
+
+        private void AddWater(Vector2 position)
+        {
+            Water waterElement = new Water();
+            waterElement.Initialize(GraphicsDevice.Viewport, WaterTexture, position);
+            water.Add(waterElement);
+        }
+
+
+            private void UpdateProjectiles()
+        {
+            // Update the Projectiles
+            for (int i = projectiles.Count - 1; i >= 0; i--) 
+            {
+                projectiles[i].Update();
+
+                if (projectiles[i].Active == false)
+                {
+                    projectiles.RemoveAt(i);
+                } 
+            }
+        }
+
+        private void UpdateEarth()
+        {
+            // Update the Projectiles
+            for (int i = earth.Count - 1; i >= 0; i--)
+            {
+                earth[i].Update();
+
+                if (earth[i].Active == false)
+                {
+                    earth.RemoveAt(i);
+                }
+            }
+        }
+
+        private void UpdateFire()
+        {
+            // Update the Projectiles
+            for (int i = fire.Count - 1; i >= 0; i--)
+            {
+                fire[i].Update();
+
+                if (fire[i].Active == false)
+                {
+                    fire.RemoveAt(i);
+                }
+            }
+        }
+
+        private void UpdateWater()
+        {
+            // Update the Projectiles
+            for (int i = water.Count - 1; i >= 0; i--)
+            {
+                water[i].Update();
+
+                if (water[i].Active == false)
+                {
+                    water.RemoveAt(i);
+                }
+            }
+        }
+
 
         private void AddExplosion(Vector2 position)
         {
