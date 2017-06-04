@@ -114,7 +114,7 @@ namespace ChakraShooter.Controller
 			previousSpawnTime = TimeSpan.Zero;
 
 			// Used to determine how fast enemy respawns
-			enemySpawnTime = TimeSpan.FromSeconds(1.0f);
+			enemySpawnTime = TimeSpan.FromSeconds(4.0f);
 
 			// Initialize our random number generator
 			random = new Random();
@@ -172,7 +172,7 @@ namespace ChakraShooter.Controller
 
 			mainBackground = Content.Load<Texture2D>("Texture/ZenBackground");
 
-			enemyTexture = Content.Load<Texture2D>("Animation/mineAnimation");
+			enemyTexture = Content.Load<Texture2D>("Animation/AkumaHeadAnimation");
 
 			projectileTexture = Content.Load<Texture2D>("Texture/ElementAir");
 
@@ -411,7 +411,7 @@ namespace ChakraShooter.Controller
 			Animation enemyAnimation = new Animation();
 
 			// Initialize the animation with the correct animation information
-			enemyAnimation.Initialize(enemyTexture, Vector2.Zero, 47, 61, 8, 30, Color.White, 1f, true);
+			enemyAnimation.Initialize(enemyTexture, Vector2.Zero, 50, 65, 2, 60, Color.White, 1f, true);
 
 			// Randomly generate the position of the enemy
 			Vector2 position = new Vector2(GraphicsDevice.Viewport.Width + enemyTexture.Width / 2, random.Next(100, GraphicsDevice.Viewport.Height - 100));
